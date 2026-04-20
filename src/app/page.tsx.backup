@@ -1,0 +1,121 @@
+"use client";
+
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import TypewriterEffect from "@/components/TypewriterEffect";
+import SystemHack from "@/components/SystemHack";
+// LandingHeroR3F removed per reset; minimal landing kept
+
+export default function Home() {
+  const [stage, setStage] = useState<'typewriter' | 'hacking' | 'landing'>('typewriter');
+  const [showLanding, setShowLanding] = useState(false);
+
+  const typewriterLines = [
+    '> run hassaan.shah',
+    '> load hassaan.core....100%',
+    '> sound.off()',
+    '> boot_sequence: ml_engineer.hassaan',
+    '> user: hassaan.shah()',
+    '> role_detected: backend.machine_learning.dev',
+    '> permissions_granted: data_modeling.engineer',
+    '> user_profile: cloud_ml_pipeline.builder',
+    '> system_status: ACTIVE',
+    '> acquiring_data: hassaan.skills',
+    '> loading_portfolio: hassaan.projects',
+    '> initializing_interface: hassaan.contact',
+  ];
+
+  const handleTypewriterComplete = () => {
+    // Typewriter completed, show launch button if needed
+  };
+
+  const handleLaunchInterface = () => {
+    setStage('hacking');
+  };
+
+  const handleHackingComplete = () => {
+    setStage('landing');
+    setTimeout(() => {
+      setShowLanding(true);
+    }, 500);
+  };
+
+  return (
+    <main className="min-h-screen text-terminal-text overflow-hidden">
+      <AnimatePresence mode="wait">
+        {/* Stage 1: Typewriter Code Animation */}
+        {stage === 'typewriter' && (
+          <motion.div
+            key="typewriter"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="min-h-screen flex flex-col items-center justify-center p-8 intro-background"
+          >
+            <div className="max-w-4xl w-full px-4">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1, duration: 0.8 }}
+                className="bg-black bg-opacity-30 border border-terminal-text rounded-lg p-4 sm:p-6 md:p-8 mb-6 sm:mb-8 backdrop-blur-sm"
+              >
+                <TypewriterEffect
+                  lines={typewriterLines}
+                  onComplete={handleTypewriterComplete}
+                  speed={30}
+                  pauseBetweenLines={200}
+                />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 2, duration: 0.8 }}
+                className="text-center px-4"
+              >
+                <button
+                  onClick={handleLaunchInterface}
+                  className="bg-transparent border-2 border-terminal-text text-terminal-text px-6 py-3 sm:px-8 sm:py-4 font-mono text-xs sm:text-sm md:text-base hover:border-terminal-accent hover:text-terminal-accent hover:bg-terminal-accent hover:bg-opacity-10 transition-all duration-300 transform hover:scale-105 active:scale-95 touch-manipulation"
+                  style={{
+                    boxShadow: '0 0 10px rgba(0, 255, 65, 0.3), inset 0 0 10px rgba(0, 255, 65, 0.1)'
+                  }}
+                >
+                  launch interface
+                </button>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Stage 2: Immersive System Hacking */}
+        {stage === 'hacking' && (
+          <motion.div
+            key="hacking"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="relative min-h-screen"
+          >
+            <SystemHack onComplete={handleHackingComplete} />
+          </motion.div>
+        )}
+
+        {/* Stage 3: Landing with 3D laptop */}
+        {stage === 'landing' && (
+          <motion.div
+            key="landing"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: showLanding ? 1 : 0, y: showLanding ? 0 : 50 }}
+            transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+            className="min-h-screen flex flex-col items-center justify-center p-8"
+          >
+            <div className="text-4xl sm:text-5xl md:text-6xl font-bold mb-8">Hassan</div>
+            <div className="w-full max-w-5xl" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </main>
+  );
+}

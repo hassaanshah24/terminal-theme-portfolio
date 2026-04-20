@@ -1,0 +1,458 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { motion, useTransform, MotionValue, AnimatePresence } from "framer-motion";
+import InteractivePixelPortrait from "../InteractivePixelPortrait";
+
+export default function StageUI({ scroll }: { scroll: MotionValue<number> }) {
+  const t = scroll; // 0..1
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Interactive portrait states
+  const [showPortrait, setShowPortrait] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+
+  // Enhanced mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobileDevice = window.innerWidth < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      setIsMobile(isMobileDevice);
+      console.log('Mobile detection:', { 
+        width: window.innerWidth, 
+        isMobile: isMobileDevice,
+        userAgent: navigator.userAgent 
+      });
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // 🌌 LAYERED 3D SPACE SYSTEM - TRULY SEPARATE SPACES
+  // LAPTOP SPACE: Z-depth -8 to -5 (BACKGROUND)
+  // TEXT SPACE: Z-depth +5 to +10 (FOREGROUND)
+  
+  // PAGE 1: Hero (0-25%) - Text in FOREGROUND SPACE
+  const page1Opacity = useTransform(t, [0.0, 0.05, 0.2, 0.25], [0, 1, 1, 0]);
+  const page1Scale = useTransform(t, [0.0, 0.1, 0.2], [0.8, 1.1, 1.0]);
+  const page1Z = useTransform(t, [0.0, 0.1, 0.2], [15, 8, 8]); // FOREGROUND SPACE
+  const page1Y = useTransform(t, [0.0, 0.1, 0.2], [0, 0, 0]); // Center vertically
+  
+  // PAGE 2: Explorer (25-50%) - Text in FOREGROUND SPACE
+  const page2Opacity = useTransform(t, [0.2, 0.25, 0.45, 0.5], [0, 1, 1, 0]);
+  const page2X = useTransform(t, [0.2, 0.25, 0.5], [200, 0, 0]); // FAR RIGHT
+  const page2Y = useTransform(t, [0.2, 0.25, 0.5], [0, 0, 0]); // Center vertically
+  const page2Z = useTransform(t, [0.2, 0.25, 0.5], [15, 8, 8]); // FOREGROUND SPACE
+  
+  // PAGE 3: Creator (50-75%) - Text in FOREGROUND SPACE
+  const page3Opacity = useTransform(t, [0.45, 0.5, 0.7, 0.75], [0, 1, 1, 0]);
+  const page3X = useTransform(t, [0.45, 0.5, 0.75], [-200, 0, 0]); // FAR LEFT
+  const page3Y = useTransform(t, [0.45, 0.5, 0.75], [0, 0, 0]); // Center vertically
+  const page3Z = useTransform(t, [0.45, 0.5, 0.75], [15, 8, 8]); // FOREGROUND SPACE
+  
+  // PAGE 4: Visionary (75-100%) - Text in FOREGROUND SPACE
+  const page4Opacity = useTransform(t, [0.7, 0.75, 0.95, 1.0], [0, 1, 1, 0]);
+  const page4X = useTransform(t, [0.7, 0.75, 1.0], [200, 0, 0]); // FAR RIGHT
+  const page4Y = useTransform(t, [0.7, 0.75, 1.0], [0, 0, 0]); // Center vertically
+  const page4Z = useTransform(t, [0.7, 0.75, 1.0], [15, 8, 8]); // FOREGROUND SPACE
+
+  return (
+    <div className="pointer-events-none fixed inset-0 z-30 flex items-center justify-center">
+      {/* VISUAL BOUNDARY - Separates BACKGROUND and FOREGROUND spaces */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-transparent pointer-events-none" 
+           style={{ zIndex: 5 }} />
+      
+      {/* BACKGROUND SPACE INDICATOR - Hidden on mobile */}
+      <div className="absolute top-4 left-4 text-white/30 text-xs font-mono pointer-events-none hidden sm:block"
+           style={{ zIndex: 1 }}>
+        BACKGROUND SPACE (Z: -8 to -5)
+      </div>
+      
+      {/* FOREGROUND SPACE INDICATOR - Hidden on mobile */}
+      <div className="absolute top-4 right-4 text-white/30 text-xs font-mono pointer-events-none hidden sm:block"
+           style={{ zIndex: 20 }}>
+        FOREGROUND SPACE (Z: +8 to +15)
+      </div>
+      {/* PAGE 1: HERO ENTRANCE - "The Journey Begins" - Properly Fixed */}
+      <motion.div
+        style={{ 
+          opacity: page1Opacity,
+          scale: page1Scale,
+          z: page1Z,
+          y: page1Y,
+          // Mobile-specific positioning - completely override Tailwind
+          ...(isMobile ? {
+            position: 'absolute',
+            left: '50%',
+            top: '65%',
+            transform: 'translate(-50%, -50%)',
+            width: '96%',
+            maxWidth: '400px',
+            paddingLeft: '8px',
+            paddingRight: '8px'
+          } : {})
+        }}
+        className={isMobile ? "absolute" : "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[96%] sm:w-[90%] max-w-2xl px-1 sm:px-0"}
+      >
+        <motion.div 
+          className="pointer-events-auto bg-gradient-to-br from-blue-500/15 to-purple-500/15 backdrop-blur-xl border border-white/30 rounded-xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl"
+          whileHover={{ scale: 1.02, y: -2 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <motion.h2 
+            className="text-white text-xl sm:text-4xl md:text-6xl font-black mb-2 sm:mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent leading-tight text-center sm:text-left cursor-pointer select-none relative"
+            initial={{ y: -30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
+            whileHover={{ 
+              scale: 1.05, 
+              y: -5,
+              textShadow: "0 0 20px rgba(59, 130, 246, 0.8)"
+            }}
+            onHoverStart={() => setIsHovering(true)}
+            onHoverEnd={() => setIsHovering(false)}
+            onClick={() => {
+              console.log('🔥 Meet Hassan clicked! Opening portrait modal...');
+              setShowPortrait(true);
+            }}
+            style={{
+              filter: isHovering ? 'drop-shadow(0 0 10px rgba(59, 130, 246, 0.6))' : 'none'
+            }}
+          >
+            Meet Hassan
+            {isHovering && (
+              <motion.span
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                className="ml-2 text-green-400 text-sm sm:text-lg md:text-xl"
+              >
+                [Click to explore]
+              </motion.span>
+            )}
+          </motion.h2>
+          <motion.p 
+            className="text-gray-200 text-xs sm:text-lg md:text-xl leading-relaxed text-center sm:text-left"
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            A passionate Software Engineering student on a mission to build the future, one line of code at a time.
+          </motion.p>
+        </motion.div>
+        
+        {/* Hover Preview Effects */}
+        {isHovering && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="absolute inset-0 pointer-events-none"
+          >
+            {/* Subtle matrix rain effect */}
+            <div className="absolute inset-0 bg-gradient-to-b from-green-500/10 to-transparent" />
+            
+            {/* Floating particles */}
+            <div className="absolute inset-0">
+              {[...Array(15)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1 h-1 bg-green-400 rounded-full"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                  }}
+                  animate={{
+                    y: [0, -100],
+                    opacity: [0, 1, 0],
+                  }}
+                  transition={{
+                    duration: 2,
+                    delay: Math.random() * 2,
+                    repeat: Infinity,
+                  }}
+                />
+              ))}
+            </div>
+            
+            {/* Glow effect */}
+            <div className="absolute inset-0 bg-gradient-radial from-green-400/20 via-transparent to-transparent" />
+          </motion.div>
+        )}
+      </motion.div>
+
+      {/* PAGE 2: EXPLORER - "Exploring Possibilities" - Enhanced Mobile */}
+      <motion.div
+        style={{ 
+          opacity: page2Opacity,
+          x: page2X,
+          y: page2Y,
+          z: page2Z,
+          scale: useTransform(t, [0.2, 0.25, 0.5], [0.8, 1, 0.9]),
+          // Mobile-specific positioning to avoid laptop overlap
+          ...(isMobile && {
+            top: '65%',
+            transform: 'translateY(-50%)'
+          })
+        }}
+        className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 w-[96%] sm:w-[80%] max-w-lg px-1 sm:px-0"
+      >
+        <motion.div 
+          className="pointer-events-auto bg-gradient-to-br from-green-500/15 to-teal-500/15 backdrop-blur-xl border border-white/30 rounded-xl sm:rounded-3xl p-3 sm:p-6 shadow-2xl"
+          whileHover={{ scale: 1.02, y: -2 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <motion.h3 
+            className="text-white text-lg sm:text-3xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-green-400 to-teal-400 bg-clip-text text-transparent leading-tight text-center sm:text-left"
+            initial={{ x: 30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            The Explorer
+          </motion.h3>
+          <motion.p 
+            className="text-gray-200 text-xs sm:text-base leading-relaxed mb-3 text-center sm:text-left"
+            initial={{ x: 30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            Currently pursuing Software Engineering, Hassan is constantly exploring new technologies and pushing the boundaries of what's possible.
+          </motion.p>
+          <motion.div 
+            className="flex flex-wrap gap-1 sm:gap-2 justify-center sm:justify-start"
+            initial={{ x: 30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            <span className="px-2 sm:px-3 py-1 bg-blue-500/25 text-blue-300 rounded-full text-xs sm:text-sm font-medium">React</span>
+            <span className="px-2 sm:px-3 py-1 bg-purple-500/25 text-purple-300 rounded-full text-xs sm:text-sm font-medium">TypeScript</span>
+            <span className="px-2 sm:px-3 py-1 bg-green-500/25 text-green-300 rounded-full text-xs sm:text-sm font-medium">Node.js</span>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+
+      {/* PAGE 3: CREATOR - "The Code Comes Alive" - Enhanced Mobile */}
+      <motion.div
+        style={{ 
+          opacity: page3Opacity,
+          x: page3X,
+          y: page3Y,
+          z: page3Z,
+          scale: useTransform(t, [0.45, 0.5, 0.75], [0.8, 1, 0.9]),
+          // Mobile-specific positioning to avoid laptop overlap
+          ...(isMobile && {
+            top: '65%',
+            transform: 'translateY(-50%)'
+          })
+        }}
+        className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 w-[96%] sm:w-[80%] max-w-lg px-1 sm:px-0"
+      >
+        <motion.div 
+          className="pointer-events-auto bg-gradient-to-br from-orange-500/15 to-red-500/15 backdrop-blur-xl border border-white/30 rounded-xl sm:rounded-3xl p-3 sm:p-6 shadow-2xl"
+          whileHover={{ scale: 1.02, y: -2 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <motion.h3 
+            className="text-white text-lg sm:text-3xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent leading-tight text-center sm:text-left"
+            initial={{ x: -30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            The Creator
+          </motion.h3>
+          <motion.p 
+            className="text-gray-200 text-xs sm:text-base leading-relaxed mb-3 text-center sm:text-left"
+            initial={{ x: -30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            From full-stack web applications to mobile apps, Hassan brings ideas to life through clean, efficient code and innovative solutions.
+          </motion.p>
+          <motion.div 
+            className="text-xs sm:text-sm text-gray-400 text-center sm:text-left italic"
+            initial={{ x: -30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            "Code is poetry written in logic"
+          </motion.div>
+        </motion.div>
+      </motion.div>
+
+      {/* PAGE 4: VISIONARY - "Building the Future" - Enhanced Mobile */}
+      <motion.div
+        style={{ 
+          opacity: page4Opacity,
+          x: page4X,
+          y: page4Y,
+          z: page4Z,
+          scale: useTransform(t, [0.7, 0.75, 1.0], [0.8, 1, 0.9]),
+          // Mobile-specific positioning to avoid laptop overlap
+          ...(isMobile && {
+            top: '65%',
+            transform: 'translateY(-50%)'
+          })
+        }}
+        className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 w-[96%] sm:w-[80%] max-w-lg px-1 sm:px-0"
+      >
+        <motion.div 
+          className="pointer-events-auto bg-gradient-to-br from-purple-500/15 to-pink-500/15 backdrop-blur-xl border border-white/30 rounded-xl sm:rounded-3xl p-3 sm:p-6 shadow-2xl"
+          whileHover={{ scale: 1.02, y: -2 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <motion.h3 
+            className="text-white text-lg sm:text-3xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent leading-tight text-center sm:text-left"
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            The Visionary
+          </motion.h3>
+          <motion.p 
+            className="text-gray-200 text-xs sm:text-base leading-relaxed mb-3 text-center sm:text-left"
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            With a keen eye for detail and a passion for innovation, Hassan focuses on creating solutions that not only work but inspire and delight users.
+          </motion.p>
+          <motion.div 
+            className="flex justify-center"
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            <div className="text-base sm:text-2xl">🚀 💻 ⚡</div>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+
+      {/* Removed CTA card for cleaner experience */}
+      
+      {/* Portrait Modal */}
+      <AnimatePresence>
+        {showPortrait && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm flex items-center justify-center"
+            onClick={() => {
+              console.log('🎭 Closing portrait modal...');
+              setShowPortrait(false);
+            }}
+          >
+            {/* Matrix background effects */}
+            <div className="absolute inset-0 bg-gradient-to-b from-green-950/20 via-black to-green-950/10" />
+            {console.log('🎭 Portrait modal is rendering!', { showPortrait })}
+            
+            {/* Portrait container - Rectangle box with side-by-side layout */}
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 50 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="relative z-10 bg-black/90 border border-green-500/30 rounded-2xl overflow-hidden shadow-2xl shadow-green-500/20 max-w-6xl w-full mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close button */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setShowPortrait(false)}
+                className="absolute top-4 right-4 text-white bg-black/50 hover:bg-black/70 rounded-full p-2 transition-colors z-20"
+                aria-label="Close portrait"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </motion.button>
+
+              {/* Side-by-side layout */}
+              <div className="flex flex-col lg:flex-row h-[80vh] max-h-[600px]">
+                {/* Left side - Portrait */}
+                <div className="flex-1 flex items-center justify-center p-6 bg-gradient-to-br from-green-950/20 to-black">
+                  <div className="w-full h-full max-w-md max-h-md">
+                    <InteractivePixelPortrait />
+                  </div>
+                </div>
+
+                {/* Right side - Text content */}
+                <div className="flex-1 p-8 flex flex-col justify-center space-y-6">
+                  {/* Title */}
+                  <motion.h2
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-4xl font-bold text-green-400"
+                  >
+                    Meet Hassan
+                  </motion.h2>
+                  
+                  {/* Subtitle */}
+                  <motion.h3
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-xl text-green-300"
+                  >
+                    Digital Identity Matrix
+                  </motion.h3>
+                  
+                  {/* Description */}
+                  <motion.div
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="space-y-4 text-gray-300"
+                  >
+                    <p className="text-lg leading-relaxed">
+                      Hover over the matrix portrait to witness the digital explosion effect. 
+                      Each pixel represents a fragment of digital identity, coming alive through 
+                      interactive technology.
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      Built with React, Three.js, and advanced canvas manipulation techniques.
+                    </p>
+                  </motion.div>
+
+                  {/* Features */}
+                  <motion.div
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                    className="space-y-2"
+                  >
+                    <div className="flex items-center space-x-2 text-green-400">
+                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      <span className="text-sm">Interactive Pixel Explosion</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-green-400">
+                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      <span className="text-sm">Real-time Canvas Animation</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-green-400">
+                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      <span className="text-sm">Matrix Digital Rain Effect</span>
+                    </div>
+                  </motion.div>
+
+                  {/* Instructions */}
+                  <motion.div
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                    className="text-xs text-gray-500 border-t border-gray-700 pt-4"
+                  >
+                    Hover over the portrait to activate • Click outside to close
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
