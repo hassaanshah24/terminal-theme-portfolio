@@ -19,7 +19,7 @@ export default function Laptop3D({
   index: number;
 }) {
   const meshRef = useRef<any>(null);
-  const gltf = useGLTF("/models/hacker_laptop.glb", true) as any;
+  const gltf = useGLTF("/models/hacker_laptop.glb") as any;
   const [ready, setReady] = useState(false);
 
   const model = useMemo(() => {
@@ -135,7 +135,7 @@ export default function Laptop3D({
     return (
       <mesh ref={meshRef as any} position={position}>
         <boxGeometry args={[1, 0.2, 0.7]} />
-        <meshStandardMaterial color="#888" />
+        <meshBasicMaterial color="#888" />
       </mesh>
     );
   }

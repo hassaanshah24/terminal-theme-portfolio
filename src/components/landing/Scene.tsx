@@ -42,12 +42,12 @@ export default function Scene({ scrollProgress }: { scrollProgress: number }) {
     const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(5, 5, 5);
-    
-    scene.add(ambientLight, directionalLight);
-    
-    // Store lights for cleanup
+
+    // Store lights in a rig and mount rig to the scene.
+    // Adding lights to both scene and group detaches them from scene.
     lightRigRef.current = new THREE.Group();
     lightRigRef.current.add(ambientLight, directionalLight);
+    scene.add(lightRigRef.current);
 
     // Enhanced realistic grid system - positioned well below laptop
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
