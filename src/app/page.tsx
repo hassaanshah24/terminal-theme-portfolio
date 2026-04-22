@@ -1,10 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import TypewriterEffect from "@/components/TypewriterEffect";
 import SystemHack from "@/components/SystemHack";
-import UltimateLaptopLanding from "@/components/landing/UltimateLaptopLanding";
+
+const UltimateLaptopLanding = dynamic(
+  () => import("@/components/landing/UltimateLaptopLanding"),
+  { ssr: false }
+);
 
 export default function Home() {
   const [stage, setStage] = useState<'typewriter' | 'hacking' | 'landing'>('typewriter');
