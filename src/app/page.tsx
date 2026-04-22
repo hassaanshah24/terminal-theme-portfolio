@@ -57,8 +57,25 @@ export default function Home() {
     }, 500);
   };
 
+  // Production-safe fallback: if the hacking sequence stalls, force landing.
+  useEffect(() => {
+    if (stage !== "hacking") return;
+
+    const fallback = window.setTimeout(() => {
+      setStage("landing");
+      setShowLanding(true);
+      window.scrollTo(0, 0);
+    }, 7000);
+
+    return () => window.clearTimeout(fallback);
+  }, [stage]);
+
   return (
-    <main className="min-h-screen text-terminal-text overflow-hidden">
+    <main
+      className={`min-h-screen text-terminal-text ${
+        stage === "landing" ? "overflow-x-hidden" : "overflow-hidden"
+      }`}
+    >
       {/* Global scroll reset for landing stage */}
       {stage === 'landing' && (
         <style jsx global>{`
